@@ -1,3 +1,9 @@
+import streamlit as st
+import pandas as pd
+from gsheetsdb import connect
+
+import plotly.express as px
+
 # Título do dashboard
 st.title("Catálogo de vinhos Woods Wine")
 
