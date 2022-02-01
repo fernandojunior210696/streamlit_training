@@ -21,7 +21,7 @@ st.sidebar.markdown("# Filtros disponíveis")
 values = st.sidebar.slider(label = "Preço dos vinhos", 
                            min_value = df_gsheet.price.min(), 
                            max_value = df_gsheet.price.max(),
-                           value = (df_gsheet.price.min(), df_gsheet.price.max()))
+                           value = (float(df_gsheet.price.min()), float(df_gsheet.price.max())))
 
 # Selected price range
 min_price=values[0]
