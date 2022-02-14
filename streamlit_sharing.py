@@ -69,16 +69,6 @@ if wine_name != 'selecione':
 if grape_type != 'selecione':
     df_filtered = df_filtered[df_filtered.grape_type == grape_type]
 
-# fig = go.Figure(data = go.Table(columnwidth=[], 
-# header=dict(values=["Vinho", "Tipo", "País", "Valor (R$)"], fill_color='#d73844', align='center'),
-# cells = dict(values=[df_filtered.wine_name, df_filtered.grape_type, df_filtered.country, df_filtered.price], align='left')
-# ))
-
-# fig.update_layout(margin=dict(l=5, r=5, b=10, t=10),font=dict(size=18))
-
-# config = {'displayModeBar': False}
-# st.plotly_chart(fig, config=config)
-
 df_filtered['price'] = df_filtered['price'].apply(lambda x: "R${:.2f}".format(x))
 df_filtered.rename(columns={"wine_name": "Nome", "grape_type": "Tipo", "country": "País", "price": "Valor"}, inplace=True)
 
@@ -94,7 +84,6 @@ hide_table_row_index = """
 st.markdown(hide_table_row_index, unsafe_allow_html=True)
 
 # Display a static table
-# st.table(df_filtered)
 
 headers = {
     'selector': 'th:not(.index_name)',
@@ -107,8 +96,3 @@ rows = {
 }
 
 st.table(df_filtered.style.hide_index().set_table_styles([headers, rows]))
-
-
-# st.table(df_filtered.style.hide_index().set_table_styles(
-#    [{'selector': 'th',
-#    'props': [('background-color', '#d73844'),('font color', '#000000')]}]))
