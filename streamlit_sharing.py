@@ -9,14 +9,54 @@ import plotly.graph_objects as go
 
 logo, title = st.columns(2)
 
-with logo:
-    st.image('./images/logo_woods.png',use_column_width='auto')
+# page title
+st.set_page_config(page_title="Catálogo de Produtos - Woods Wine", layout="centered")
 
-with title:
-    st.markdown("<h2 style='text-align: right; line-height: 100px; '>Catálogo Woods Wine</h2>", unsafe_allow_html=True)
+LOGO_IMAGE = "./images/logo.jpg"
 
-st.markdown("---")
-st.markdown("<p style='text-align: center; font-size: 32px; '>Filtre abaixo por país, tipo de uva, faixa de preço ou pelo nome do vinho e faça sua escolha!</p>", unsafe_allow_html=True)
+st.markdown(
+    """
+    <style>
+    .container {
+        display: flex;
+    }
+    .logo-text {
+        font-weight:700 !important;
+        font-size:50px !important;
+        color: #f9a01b !important;
+        padding-top: 75px !important;
+    }
+    .logo-img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+st.markdown(
+    f"""
+    <div class="container">
+        <img class="logo-img" src="data:image/png;base64,{base64.b64encode(open(LOGO_IMAGE, "rb").read()).decode()}">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+# hide streamlit menu
+st.markdown(""" <style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+</style> """, unsafe_allow_html=True)
+
+title_settings = "<h1 style='text-align: center; color: #D73844; background-color:#46172D;'>Catálogo de Produtos</h1>"
+st.markdown(title_settings, unsafe_allow_html=True)
+
 
 @st.cache
 def get_data(url):
@@ -24,10 +64,11 @@ def get_data(url):
     gsheet_url = url
     # gsheet_url = st.secrets["public_gsheets_url"]
     conn = connect()
-    rows = conn.execute(f'SELECT NOME AS wine_name, TIPO AS grape_type, ORIGEM AS country, VALOR AS price FROM "{gsheet_url}"')
+    rows = conn.execute('SELECT NOME AS wine_name, TIPO AS grape_type, ORIGEM AS country, VALOR AS price, UVA AS grape, SUB_REGIAO AS region FROM "{a}"'.format(a=gsheet_url))
 
     # Converte dados para pandas df
     df_gsheet = pd.DataFrame(rows)
+    df_gsheet.fillna("-", inplace= True)
     return df_gsheet
 
 def path_to_image_html(path):
@@ -42,24 +83,34 @@ def path_to_image_html(path):
 
 df_gsheet = get_data(st.secrets["public_gsheets_url"])
 
-values = st.slider(label = "Preço dos vinhos", 
+# filters expander
+my_expander = st.expander(label= 'Filtre aqui os produtos desejados!')
+with my_expander:
+
+    values = st.slider(label = "Preço dos produtos", 
                            min_value = df_gsheet.price.min(), 
                            max_value = df_gsheet.price.max(),
                            value = (float(df_gsheet.price.min()), float(df_gsheet.price.max())),
                            format = "R$%g")
 
-# Selected price range
-min_price=values[0]
-max_price=values[1]
+    # Selected price range
+    min_price=values[0]
+    max_price=values[1]
 
-# Selected country
-country = st.selectbox("Selecione o país", ['selecione'] + list(df_gsheet.country.unique()), 0)
+    # Selected country
+    country = st.selectbox("Selecione o país", ['selecione'] + list(df_gsheet.country.unique()), 0)
 
-# Selected type
-grape_type = st.selectbox("Selecione o tipo de uva", ['selecione'] + list(df_gsheet.grape_type.unique()), 0)
+    # Selected region
+    region = st.selectbox("Selecione a região/sub-regiao", ['selecione'] + list(df_gsheet.region.unique()), 0)
 
-# Selected wine
-wine_name = st.selectbox("Selecione o nome do vinho", ['selecione'] + list(df_gsheet.wine_name.unique()), 0)
+    # Selected type
+    grape_type = st.selectbox("Selecione o tipo de produto", ['selecione'] + list(df_gsheet.grape_type.unique()), 0)
+
+    # Selected wine
+    wine_name = st.selectbox("Selecione o nome do vinho", ['selecione'] + list(df_gsheet.wine_name.unique()), 0)
+
+    # Selected grape
+    grape = st.selectbox("Selecione a uva", ['selecione'] + list(df_gsheet.grape.str.split("/").explode().unique()), 0)
 
 df_filtered = df_gsheet[(df_gsheet.price>=min_price) & (df_gsheet.price<=max_price)]
 if country != 'selecione':
@@ -68,9 +119,14 @@ if wine_name != 'selecione':
     df_filtered = df_filtered[df_filtered.wine_name == wine_name]
 if grape_type != 'selecione':
     df_filtered = df_filtered[df_filtered.grape_type == grape_type]
+if grape != 'selecione':
+    # df_filtered = df_filtered[df_filtered.grape == grape]
+    df_filtered = df_filtered[df_filtered.grape.str.contains(grape)]
+if region != 'selecione':
+    df_filtered = df_filtered[df_filtered.region == region]
 
 df_filtered['price'] = df_filtered['price'].apply(lambda x: "R${:.2f}".format(x))
-df_filtered.rename(columns={"wine_name": "Nome", "grape_type": "Tipo", "country": "País", "price": "Valor"}, inplace=True)
+df_filtered.rename(columns={"wine_name": "Nome", "grape_type": "Tipo", "country": "País", "price": "Valor", "grape": "Uva", "region": "Sub Região"}, inplace=True)
 
 # CSS to inject contained in a string
 hide_table_row_index = """
