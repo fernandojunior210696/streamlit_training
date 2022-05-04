@@ -52,7 +52,7 @@ title_settings = "<h1 style='text-align: center; color: #D73844; background-colo
 st.markdown(title_settings, unsafe_allow_html=True)
 
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def get_data():
     # Recupera dados da planilha do google sheets
 
