@@ -79,7 +79,7 @@ def path_to_image_html(path):
 gsheets_url = st.secrets["gsheets_url"]
 
 # filters expander
-my_expander = st.expander(label= 'Filtre pelo tipo de produto, faixa de preço, região e outros aqui!', expanded=True)
+my_expander = st.expander(label= 'Filtre por produto, preço, região e outros aqui!', expanded=True)
 with my_expander:
     df_gsheet = get_data(gsheets_url)
     values = st.slider(label = "Preço dos produtos", 
