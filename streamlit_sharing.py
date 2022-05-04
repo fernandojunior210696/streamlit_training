@@ -150,8 +150,7 @@ if filter_apply:
                       height=1200, 
                       margin=dict(l=0, r=0, t=0, b=0), 
                       showlegend=False, 
-                      title_font_family="Roboto",
-                      title_font_size=18
+                      font=dict(size=16,color="#ffffff")
                      )
     
     st.plotly_chart(fig, use_container_width=True)
