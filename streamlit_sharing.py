@@ -1,11 +1,6 @@
-from email import header
 import streamlit as st
 import pandas as pd
-from gsheetsdb import connect
-from IPython.core.display import HTML
 import base64
-
-import plotly.express as px
 import plotly.graph_objects as go
 
 # page title
@@ -58,15 +53,15 @@ st.markdown(title_settings, unsafe_allow_html=True)
 
 
 @st.cache
-def get_data(url):
+def get_data():
     # Recupera dados da planilha do google sheets
-    gsheet_url = url
-    # gsheet_url = st.secrets["public_gsheets_url"]
-    conn = connect()
-    rows = conn.execute('SELECT NOME AS wine_name, TIPO AS grape_type, ORIGEM AS country, VALOR AS price, UVA AS grape, SUB_REGIAO AS region FROM "{a}"'.format(a=gsheet_url))
 
-    # Converte dados para pandas df
-    df_gsheet = pd.DataFrame(rows)
+    sheet_id = st.secrets["sheet_id"]
+    sheet_name = st.secrets["sheet_name"]
+    url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+    
+    df_gsheet = pd.read_csv(url, decimal=",")
+    df_gsheet.rename(columns={"NOME":"wine_name", "TIPO":"grape_type", "ORIGEM":"country", "VALOR":"price", "UVA":"grape", "SUB_REGIAO":"region"}, inplace=True)
     df_gsheet.fillna("-", inplace= True)
     return df_gsheet
 
@@ -80,12 +75,11 @@ def path_to_image_html(path):
 
     return '<img src="'+ path + '" style=max-height:24px;"/>'
 
-df_gsheet = get_data(st.secrets["public_gsheets_url"])
 
 # filters expander
-my_expander = st.expander(label= 'Filtre aqui os produtos desejados!')
+my_expander = st.expander(label= 'Filtre aqui!', expanded=True)
 with my_expander:
-
+    df_gsheet = get_data()
     values = st.slider(label = "Preço dos produtos", 
                            min_value = df_gsheet.price.min(), 
                            max_value = df_gsheet.price.max(),
@@ -96,58 +90,59 @@ with my_expander:
     min_price=values[0]
     max_price=values[1]
 
+    # Selected type
+    grape_type = st.selectbox("Selecione o tipo de produto", ['selecione'] + list(df_gsheet.grape_type.unique()), 0)
+
     # Selected country
     country = st.selectbox("Selecione o país", ['selecione'] + list(df_gsheet.country.unique()), 0)
 
     # Selected region
-    region = st.selectbox("Selecione a região/sub-regiao", ['selecione'] + list(df_gsheet.region.unique()), 0)
-
-    # Selected type
-    grape_type = st.selectbox("Selecione o tipo de produto", ['selecione'] + list(df_gsheet.grape_type.unique()), 0)
+    region = st.selectbox("Selecione a região/sub-regiao", ['selecione'] + list(df_gsheet.region.str.split("/").explode().str.strip().unique()), 0)
 
     # Selected wine
     wine_name = st.selectbox("Selecione o nome do vinho", ['selecione'] + list(df_gsheet.wine_name.unique()), 0)
 
     # Selected grape
-    grape = st.selectbox("Selecione a uva", ['selecione'] + list(df_gsheet.grape.str.split("/").explode().unique()), 0)
+    grape = st.selectbox("Selecione a uva", ['selecione'] + list(df_gsheet.grape.str.split("/").explode().str.strip().unique()), 0)
 
-df_filtered = df_gsheet[(df_gsheet.price>=min_price) & (df_gsheet.price<=max_price)]
-if country != 'selecione':
-    df_filtered = df_filtered[df_filtered.country == country]
-if wine_name != 'selecione':
-    df_filtered = df_filtered[df_filtered.wine_name == wine_name]
-if grape_type != 'selecione':
-    df_filtered = df_filtered[df_filtered.grape_type == grape_type]
-if grape != 'selecione':
-    # df_filtered = df_filtered[df_filtered.grape == grape]
-    df_filtered = df_filtered[df_filtered.grape.str.contains(grape)]
-if region != 'selecione':
-    df_filtered = df_filtered[df_filtered.region == region]
+    # Filter button
+    m = st.markdown("""
+    <style>
+    div.stButton > button:first-child {
+        color: #ffffff; 
+        background-color:#D73844;
+        margin:0 auto;
+        display:block;
+    }
+    </style>""", unsafe_allow_html=True)
+    filter_apply = st.button('Filtre aqui!')
 
-df_filtered['price'] = df_filtered['price'].apply(lambda x: "R${:.2f}".format(x))
-df_filtered.rename(columns={"wine_name": "Nome", "grape_type": "Tipo", "country": "País", "price": "Valor", "grape": "Uva", "region": "Sub Região"}, inplace=True)
+if filter_apply:
 
-# CSS to inject contained in a string
-hide_table_row_index = """
-            <style>
-            tbody th {display:none}
-            .blank {display:none}
-            </style>
-            """
+    df_filtered = df_gsheet[(df_gsheet.price>=min_price) & (df_gsheet.price<=max_price)]
+    if country != 'selecione':
+        df_filtered = df_filtered[df_filtered.country == country]
+    if wine_name != 'selecione':
+        df_filtered = df_filtered[df_filtered.wine_name == wine_name]
+    if grape_type != 'selecione':
+        df_filtered = df_filtered[df_filtered.grape_type == grape_type]
+    if grape != 'selecione':
+        df_filtered = df_filtered[df_filtered.grape.str.contains(grape)]
+    if region != 'selecione':
+        df_filtered = df_filtered[df_filtered.region.str.contains(region)]
 
-# Inject CSS with Markdown
-st.markdown(hide_table_row_index, unsafe_allow_html=True)
-
-# Display a static table
-
-headers = {
-    'selector': 'th:not(.index_name)',
-    'props': [('background-color', '#d73844'), ('color', 'white')]
-}
-
-rows = {
-    'selector': 'td',
-    'props': [('background-color', '#F0F2F6'), ('color', '#000000')]
-}
-
-st.table(df_filtered.style.hide_index().set_table_styles([headers, rows]))
+    df_filtered['price'] = df_filtered['price'].apply(lambda x: "R${:.2f}".format(x))
+    df_filtered.rename(columns={"wine_name": "Nome", "grape_type": "Tipo", "country": "Pais", "price": "Valor", "grape": "Uva", "region": "Regiao"}, inplace=True)
+    
+    fig = go.Figure(data=[go.Table(
+    header=dict(values=list(df_filtered[["Nome", "Tipo", "Pais", "Valor"]].columns),
+                fill_color='#d73844',
+                align='left',
+                font=dict(color='black')),
+    cells=dict(values=[df_filtered.Nome, df_filtered.Tipo, df_filtered.Pais, df_filtered.Valor],
+               fill_color='#F0F2F6',
+               align='left',
+               font=dict(color='black')))
+    ])
+    fig.update_layout(width=1200,height=1200, margin=dict(l=0, r=0, t=0, b=0), showlegend=False, )
+    st.plotly_chart(fig, use_container_width=True)
