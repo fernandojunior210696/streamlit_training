@@ -79,7 +79,7 @@ def path_to_image_html(path):
 gsheets_url = st.secrets["gsheets_url"]
 
 # filters expander
-my_expander = st.expander(label= 'Filtre aqui!', expanded=True)
+my_expander = st.expander(label= 'Filtre pelo tipo de produto, faixa de preço, região e outros aqui!', expanded=True)
 with my_expander:
     df_gsheet = get_data(gsheets_url)
     values = st.slider(label = "Preço dos produtos", 
@@ -102,10 +102,10 @@ with my_expander:
     region = st.selectbox("Selecione a região/sub-regiao", ['selecione'] + list(df_gsheet.region.str.split("/").explode().str.strip().unique()), 0)
 
     # Selected wine
-    wine_name = st.selectbox("Selecione o nome do vinho", ['selecione'] + list(df_gsheet.wine_name.unique()), 0)
+    wine_name = st.selectbox("Selecione o nome do produto", ['selecione'] + list(df_gsheet.wine_name.unique()), 0)
 
     # Selected grape
-    grape = st.selectbox("Selecione a uva", ['selecione'] + list(df_gsheet.grape.str.split("/").explode().str.strip().unique()), 0)
+    grape = st.selectbox("Selecione a uva (se for vinho)", ['selecione'] + list(df_gsheet.grape.str.split("/").explode().str.strip().unique()), 0)
 
     # Filter button
     m = st.markdown("""
@@ -117,7 +117,7 @@ with my_expander:
         display:block;
     }
     </style>""", unsafe_allow_html=True)
-    filter_apply = st.button('Filtre aqui!')
+    filter_apply = st.button('Filtrar produtos!')
 
 if filter_apply:
 
@@ -146,5 +146,11 @@ if filter_apply:
                align='left',
                font=dict(color='black')))
     ])
-    fig.update_layout(width=1200,height=1200, margin=dict(l=0, r=0, t=0, b=0), showlegend=False, )
+    fig.update_layout(width=1200,
+                      height=1200, 
+                      margin=dict(l=0, r=0, t=0, b=0), 
+                      showlegend=False, 
+                      font=dict(family="Courier New, monospace",size=18,color="#ffffff")
+                     )
+    
     st.plotly_chart(fig, use_container_width=True)
