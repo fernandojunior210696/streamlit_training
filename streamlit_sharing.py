@@ -53,14 +53,15 @@ st.markdown(title_settings, unsafe_allow_html=True)
 
 
 @st.cache(allow_output_mutation=True)
-def get_data():
+def get_data(url):
     # Recupera dados da planilha do google sheets
 
-    sheet_id = st.secrets["sheet_id"]
-    sheet_name = st.secrets["sheet_name"]
-    url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+#     sheet_id = st.secrets["sheet_id"]
+#     sheet_name = st.secrets["sheet_name"]
+    gsheet_url = url
+#     url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
     
-    df_gsheet = pd.read_csv(url, decimal=",")
+    df_gsheet = pd.read_csv(gsheet_url, decimal=",")
     df_gsheet.rename(columns={"NOME":"wine_name", "TIPO":"grape_type", "ORIGEM":"country", "VALOR":"price", "UVA":"grape", "SUB_REGIAO":"region"}, inplace=True)
     df_gsheet.fillna("-", inplace= True)
     return df_gsheet
@@ -75,11 +76,12 @@ def path_to_image_html(path):
 
     return '<img src="'+ path + '" style=max-height:24px;"/>'
 
+gsheets_url = st.secrets["gsheets_url"]
 
 # filters expander
 my_expander = st.expander(label= 'Filtre aqui!', expanded=True)
 with my_expander:
-    df_gsheet = get_data()
+    df_gsheet = get_data(gsheets_url)
     values = st.slider(label = "Preço dos produtos", 
                            min_value = df_gsheet.price.min(), 
                            max_value = df_gsheet.price.max(),
