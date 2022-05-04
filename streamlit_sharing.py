@@ -139,13 +139,16 @@ if filter_apply:
     fig = go.Figure(data=[go.Table(
     header=dict(values=list(df_filtered[["Nome", "Tipo", "Pais", "Valor"]].columns),
                 fill_color='#d73844',
-                align='left',
-                font=dict(color='black')),
+                align=['left', 'center', 'center', 'center'],
+                font=dict(color='black'),
+                height=40),
     cells=dict(values=[df_filtered.Nome, df_filtered.Tipo, df_filtered.Pais, df_filtered.Valor],
                fill_color='#F0F2F6',
-               align='left',
-               font=dict(color='black')))
+               align=['left', 'center', 'center', 'center'],
+               font=dict(color='black'),
+               height=30))
     ])
+    
     fig.update_layout(width=1200,
                       height=1200, 
                       margin=dict(l=0, r=0, t=0, b=0), 
