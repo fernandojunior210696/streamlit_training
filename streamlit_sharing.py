@@ -150,7 +150,7 @@ if filter_apply:
     ])
     
     fig.update_layout(width=1200,
-                      height=1200, 
+                      height=9000, 
                       margin=dict(l=0, r=0, t=0, b=0), 
                       showlegend=False, 
                       font=dict(size=16,color="#ffffff")
