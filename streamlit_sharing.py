@@ -77,11 +77,11 @@ def path_to_image_html(path):
     return '<img src="'+ path + '" style=max-height:24px;"/>'
 
 gsheets_url = st.secrets["gsheets_url"]
+df_gsheet = get_data(gsheets_url)
 
 # filters expander
 my_expander = st.expander(label= 'Filtre por produto, preço, região e outros aqui!', expanded=True)
 with my_expander:
-    df_gsheet = get_data(gsheets_url)
     values = st.slider(label = "Preço dos produtos", 
                            min_value = df_gsheet.price.min(), 
                            max_value = df_gsheet.price.max(),
@@ -94,18 +94,18 @@ with my_expander:
 
     # Selected type
     grape_type = st.selectbox("Selecione o tipo de produto", ['selecione'] + list(df_gsheet.grape_type.unique()), 0)
+    
+    # Selected grape
+    grape = st.selectbox("Selecione a uva (se for vinho)", ['selecione'] + list(df_gsheet.grape.str.split("/").explode().str.strip().unique()), 0)
 
     # Selected country
     country = st.selectbox("Selecione o país", ['selecione'] + list(df_gsheet.country.unique()), 0)
 
     # Selected region
-    region = st.selectbox("Selecione a região/sub-regiao", ['selecione'] + list(df_gsheet.region.str.split("/").explode().str.strip().unique()), 0)
+    region = st.selectbox("Selecione a região/sub-região", ['selecione'] + list(df_gsheet.region.str.split("/").explode().str.strip().unique()), 0)
 
     # Selected wine
     wine_name = st.selectbox("Selecione o nome do produto", ['selecione'] + list(df_gsheet.wine_name.unique()), 0)
-
-    # Selected grape
-    grape = st.selectbox("Selecione a uva (se for vinho)", ['selecione'] + list(df_gsheet.grape.str.split("/").explode().str.strip().unique()), 0)
 
     # Filter button
     m = st.markdown("""
