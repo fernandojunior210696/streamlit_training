@@ -4,7 +4,7 @@ import base64
 import plotly.graph_objects as go
 
 # page title
-st.set_page_config(page_title="Catálogo de Produtos - Woods Wine", layout="centered")
+st.set_page_config(page_title="Catálogo de Produtos - Woods Wine", layout="wide")
 
 LOGO_IMAGE = "./images/logo.jpg"
 
