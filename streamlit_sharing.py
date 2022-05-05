@@ -142,5 +142,5 @@ if filter_apply:
                                                  'overflow-x': 'scroll'})
     
     st.markdown('<style>.ReactVirtualized__Grid__innerScrollContainer div[class^="col_heading"]{ background:#d73844; font-size: 18px; } </style>', unsafe_allow_html=True)
-    st.markdown('<style>.ReactVirtualized__Grid__innerScrollContainer div[class^="row"]{ background:#d73844; display: none; } </style>', unsafe_allow_html=True)
+#     st.markdown('<style>.ReactVirtualized__Grid__innerScrollContainer div[class^="row"]{ background:#d73844; display: none; } </style>', unsafe_allow_html=True)
     st.dataframe(s, height=900)
