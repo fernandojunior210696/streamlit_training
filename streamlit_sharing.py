@@ -140,4 +140,7 @@ if filter_apply:
     s = df_filtered.style.set_properties(**{'background-color': '#F0F2F6',              
                                                  'border-color': 'black',
                                                  'overflow-x': 'scroll'})
+    
+    st.markdown('<style>.ReactVirtualized__Grid__innerScrollContainer div[class^="col_heading"]{ background:#d73844; font-size: 18px; } </style>', unsafe_allow_html=True)
+    st.markdown('<style>.ReactVirtualized__Grid__innerScrollContainer div[class^="row"]{ background:#d73844; display: none; } </style>', unsafe_allow_html=True)
     st.dataframe(s, height=900)
