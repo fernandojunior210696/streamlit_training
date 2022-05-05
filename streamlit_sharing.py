@@ -135,6 +135,7 @@ if filter_apply:
 
     df_filtered['price'] = df_filtered['price'].apply(lambda x: "R${:.2f}".format(x))
     df_filtered.rename(columns={"wine_name": "Nome", "grape_type": "Tipo", "country": "Pais", "price": "Valor", "grape": "Uva", "region": "Regiao"}, inplace=True)
+    df_filtered = df_filtered[["Nome", "Tipo", "Uva", "Pais", "Regiao", "Valor"]]
     
     s = df_filtered.style.set_properties(**{'background-color': '#F0F2F6',              
                                                  'border-color': 'black',
