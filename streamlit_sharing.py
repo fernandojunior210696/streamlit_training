@@ -140,4 +140,4 @@ if filter_apply:
     s = df_filtered.style.set_properties(**{'background-color': '#F0F2F6',              
                                                  'border-color': 'black',
                                                  'overflow-x': 'scroll'})
-    st.write(s, unsafe_allow_html=True)
+    st.dataframe(s, height=900)
