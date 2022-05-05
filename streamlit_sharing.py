@@ -136,24 +136,7 @@ if filter_apply:
     df_filtered['price'] = df_filtered['price'].apply(lambda x: "R${:.2f}".format(x))
     df_filtered.rename(columns={"wine_name": "Nome", "grape_type": "Tipo", "country": "Pais", "price": "Valor", "grape": "Uva", "region": "Regiao"}, inplace=True)
     
-    fig = go.Figure(data=[go.Table(
-    header=dict(values=list(df_filtered[["Nome", "Tipo", "Pais", "Valor"]].columns),
-                fill_color='#d73844',
-                align=['left', 'center', 'center', 'center'],
-                font=dict(color='black'),
-                height=40),
-    cells=dict(values=[df_filtered.Nome, df_filtered.Tipo, df_filtered.Pais, df_filtered.Valor],
-               fill_color='#F0F2F6',
-               align=['left', 'center', 'center', 'center'],
-               font=dict(color='black'),
-               height=30))
-    ])
-    
-    fig.update_layout(width=1200,
-                      height=9000, 
-                      margin=dict(l=0, r=0, t=0, b=0), 
-                      showlegend=False, 
-                      font=dict(size=16,color="#ffffff")
-                     )
-    
-    st.plotly_chart(fig, use_container_width=True)
+    s = df_filtered.style.set_properties(**{'background-color': '#F0F2F6',              
+                                                 'border-color': 'black',
+                                                 'overflow-x': 'scroll'})
+    st.write(s, unsafe_allow_html=True)
