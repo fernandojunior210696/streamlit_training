@@ -118,6 +118,8 @@ with my_expander:
     }
     </style>""", unsafe_allow_html=True)
     filter_apply = st.button('Filtrar produtos!')
+    sem_filtro = "<p style='text-align: center; font-size: 12px'>Para acessar o Catalogo completo, clique em Filtrar produtos sem selecionar nenhum filtro!</p>"
+    st.markdown(sem_filtro, unsafe_allow_html=True)
 
 if filter_apply:
 
