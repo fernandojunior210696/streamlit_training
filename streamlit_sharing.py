@@ -137,6 +137,7 @@ if filter_apply:
     df_filtered.rename(columns={"wine_name": "Nome", "grape_type": "Tipo", "country": "Pais", "price": "Valor", "grape": "Uva", "region": "Regiao"}, inplace=True)
     df_filtered = df_filtered[["Nome", "Tipo", "Uva", "Pais", "Regiao", "Valor"]]
     
+    df_filtered.reset_index(inplace=True)
     s = df_filtered.style.set_properties(**{'background-color': '#F0F2F6',              
                                                  'border-color': 'black',
                                                  'overflow-x': 'scroll'})
