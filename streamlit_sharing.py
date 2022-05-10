@@ -52,14 +52,10 @@ title_settings = "<h1 style='text-align: center; color: #D73844; background-colo
 st.markdown(title_settings, unsafe_allow_html=True)
 
 
-# @st.cache(allow_output_mutation=False)
+@st.cache(allow_output_mutation=True)
 def get_data(url):
     # Recupera dados da planilha do google sheets
-
-#     sheet_id = st.secrets["sheet_id"]
-#     sheet_name = st.secrets["sheet_name"]
     gsheet_url = url
-#     url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
     
     df_gsheet = pd.read_csv(gsheet_url, decimal=",")
     df_gsheet.rename(columns={"NOME":"wine_name", "TIPO":"grape_type", "ORIGEM":"country", "VALOR":"price", "UVA":"grape", "SUB_REGIAO":"region"}, inplace=True)
@@ -145,5 +141,4 @@ if filter_apply:
                                                  'overflow-x': 'scroll'})
     
     st.markdown('<style>.ReactVirtualized__Grid__innerScrollContainer div[class^="col_heading"]{ background:#d73844; font-size: 18px; color:black} </style>', unsafe_allow_html=True)
-#     st.markdown('<style>.ReactVirtualized__Grid__innerScrollContainer div[class^="row"]{ background:#d73844; display: none; } </style>', unsafe_allow_html=True)
     st.dataframe(s, height=900)
