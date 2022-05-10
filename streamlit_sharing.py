@@ -77,6 +77,7 @@ df_gsheet = get_data(gsheets_url)
 
 # filters expander
 my_expander = st.expander(label= 'Filtre por produto, preço, região e outros aqui!', expanded=True)
+df_expander = df_gsheet.copy()
 with my_expander:
     values = st.slider(label = "Preço dos produtos", 
                            min_value = df_gsheet.price.min(), 
@@ -88,20 +89,32 @@ with my_expander:
     min_price=values[0]
     max_price=values[1]
 
+    df_expander = df_expander[(df_expander.price>=min_price) & (df_expander.price<=max_price)]
+
     # Selected type
-    grape_type = st.selectbox("Selecione o tipo de produto", ['selecione'] + list(df_gsheet.grape_type.unique()), 0)
-    
+    grape_type = st.selectbox("Selecione o tipo de produto", ['selecione'] + list(df_expander.grape_type.unique()), 0)
+    if grape_type != 'selecione':
+        df_expander = df_expander[df_expander.grape_type == grape_type]
+
     # Selected grape
-    grape = st.selectbox("Selecione a uva (se for vinho)", ['selecione'] + list(df_gsheet.grape.str.split("/").explode().str.strip().unique()), 0)
+    grape = st.selectbox("Selecione a uva (se for vinho)", ['selecione'] + list(df_expander.grape.str.split("/").explode().str.strip().unique()), 0)
+    if grape != 'selecione':
+        df_expander = df_expander[df_expander.grape.str.contains(grape)]
 
     # Selected country
-    country = st.selectbox("Selecione o país", ['selecione'] + list(df_gsheet.country.unique()), 0)
+    country = st.selectbox("Selecione o país", ['selecione'] + list(df_expander.country.unique()), 0)
+    if country != 'selecione':
+        df_expander = df_expander[df_expander.country == country]
 
     # Selected region
-    region = st.selectbox("Selecione a região/sub-região", ['selecione'] + list(df_gsheet.region.str.split("/").explode().str.strip().unique()), 0)
+    region = st.selectbox("Selecione a região/sub-região", ['selecione'] + list(df_expander.region.str.split("/").explode().str.strip().unique()), 0)
+    if region != 'selecione':
+        df_expander = df_expander[df_expander.region.str.contains(region)]
 
     # Selected wine
-    wine_name = st.selectbox("Selecione o nome do produto", ['selecione'] + list(df_gsheet.wine_name.unique()), 0)
+    wine_name = st.selectbox("Selecione o nome do produto", ['selecione'] + list(df_expander.wine_name.unique()), 0)
+    if wine_name != 'selecione':
+        df_expander = df_expander[df_expander.wine_name == wine_name]
 
     # Filter button
     m = st.markdown("""
