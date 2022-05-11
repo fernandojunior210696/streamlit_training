@@ -76,18 +76,45 @@ gsheets_url = st.secrets["gsheets_url"]
 df_gsheet = get_data(gsheets_url)
 
 # filters expander
-my_expander = st.expander(label= 'Filtre por produto, preço, região e outros aqui!', expanded=True)
+my_expander = st.expander(label= 'Filtre por preço, produto, região e outros aqui!', expanded=True)
+st.markdown(
+            """
+        <style>
+        .streamlit-expanderHeader {
+            font-size: 20px;
+            text-align: center;
+            font-weight: 500;
+            padding: 20px 0px 0px 20px
+        }
+        </style>
+        """,
+        unsafe_allow_html=True)
 df_expander = df_gsheet.copy()
 with my_expander:
-    values = st.slider(label = "Preço dos produtos", 
+    st.markdown("---")
+    
+    # format price section
+    price_settings = "<p style='font-size:18px; font-weight: 500'>Faixa de preço</p>"
+    st.markdown(price_settings, unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        min_price = st.number_input(label = 'A partir de R$',
                            min_value = df_gsheet.price.min(), 
                            max_value = df_gsheet.price.max(),
-                           value = (float(df_gsheet.price.min()), float(df_gsheet.price.max())),
-                           format = "R$%g")
+                           format = "%g",
+                           value = 100.0,
+                           step = 10.0)
 
-    # Selected price range
-    min_price=values[0]
-    max_price=values[1]
+    with col2:
+        max_price = st.number_input(label = 'Até R$',
+                           min_value = df_gsheet.price.min(), 
+                           max_value = df_gsheet.price.max(),
+                           value = 24000.0,
+                           format = "%g",
+                           step = 10.0)
+
+    st.markdown("---")
 
     df_expander = df_expander[(df_expander.price>=min_price) & (df_expander.price<=max_price)]
 
