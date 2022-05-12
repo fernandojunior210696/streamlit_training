@@ -176,9 +176,9 @@ if filter_apply:
     df_filtered = df_filtered[["Nome", "Tipo", "Uva", "Pais", "Regiao", "Valor"]]
     
     df_filtered.reset_index(drop=True, inplace=True)
-    s = df_filtered.style.set_properties(**{'background-color': '#F0F2F6',              
-                                                 'border-color': 'black',
-                                                 'overflow-x': 'scroll'})
     
-    st.markdown('<style>.ReactVirtualized__Grid__innerScrollContainer div[class^="col_heading"]{ background:#d73844; font-size: 18px; color:black} </style>', unsafe_allow_html=True)
+    s = df_filtered.style.set_properties(**{'background-color': '#F0F2F6',              
+                                                 'border-color': 'black'}).hide_index()
+    st.markdown('<style>.ReactVirtualized__Grid__innerScrollContainer div[class^="col_heading"]{ background:#d73844; font-size: 18px; color: black} </style>', unsafe_allow_html=True)
+    st.markdown('<style>.ReactVirtualized__Grid__innerScrollContainer div[class^="row"]{ display: none; } </style>', unsafe_allow_html=True)
     st.dataframe(s, height=900)
