@@ -98,7 +98,7 @@ with my_expander:
     st.markdown(price_settings, unsafe_allow_html=True)
     
     # adjust inicial labels
-    min_price_inicial_value = max(100, df_gsheet.price.min())
+    min_price_inicial_value = max(100.0, df_gsheet.price.min())
     max_price_inicial_value = min(24000.0, df_gsheet.price.max())
     
     col1, col2 = st.columns(2)
