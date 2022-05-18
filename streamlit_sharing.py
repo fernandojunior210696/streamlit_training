@@ -97,20 +97,24 @@ with my_expander:
     price_settings = "<p style='font-size:18px; font-weight: 500'>Faixa de preço</p>"
     st.markdown(price_settings, unsafe_allow_html=True)
     
+    # adjust inicial labels
+    min_price_inicial_value = max(100, df_gsheet.price.min())
+    max_price_inicial_value = min(24000.0, df_gsheet.price.max())
+    
     col1, col2 = st.columns(2)
     with col1:
         min_price = st.number_input(label = 'A partir de R$',
                            min_value = df_gsheet.price.min(), 
                            max_value = df_gsheet.price.max(),
                            format = "%g",
-                           value = 100.0,
+                           value = min_price_inicial_value,
                            step = 10.0)
 
     with col2:
         max_price = st.number_input(label = 'Até R$',
                            min_value = df_gsheet.price.min(), 
                            max_value = df_gsheet.price.max(),
-                           value = 24000.0,
+                           value = max_price_inicial_value,
                            format = "%g",
                            step = 10.0)
 
