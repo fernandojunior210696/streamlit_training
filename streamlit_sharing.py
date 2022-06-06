@@ -2,9 +2,6 @@ import streamlit as st
 import pandas as pd
 import base64
 import plotly.graph_objects as go
-import locale
-
-locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
 # page title
 st.set_page_config(page_title="Catálogo de Produtos - Woods Wine", layout="centered")
@@ -178,7 +175,7 @@ if filter_apply:
     if region != 'selecione':
         df_filtered = df_filtered[df_filtered.region.str.contains(region)]
 
-    df_filtered['price'] = df_filtered['price'].apply(lambda x: "R${}".format(locale.currency(x, grouping=False, symbol=None)))
+    df_filtered['price'] = df_filtered['price'].apply(lambda x: "R${:.2f}".format(x))
     df_filtered.rename(columns={"wine_name": "Nome", "grape_type": "Tipo", "country": "Pais", "price": "Valor", "grape": "Uva", "region": "Regiao"}, inplace=True)
     df_filtered = df_filtered[["Nome", "Tipo", "Uva", "Pais", "Regiao", "Valor"]]
     
